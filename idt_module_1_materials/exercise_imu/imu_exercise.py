@@ -20,6 +20,8 @@ imuType = "sparkfun_razor"
 showPlot = True
 plotDataPitch = []
 plotDataRoll = []
+plotFiltDataPitch = []
+plotFiltDataRoll = []
 
 ## Initialize your variables here ##
 pitch = 0.0
@@ -30,6 +32,7 @@ roll = 0.0
 # import libraries
 from math import pi, sqrt, atan2
 import matplotlib.pyplot as plt
+import math
 
 # open the imu data file
 f = open(fileName, "r")
@@ -45,11 +48,19 @@ def acc2euler(ax, ay, az):
     return [pitch, roll]
 
 
-def low_pass(new_value, last_filtered, alpha=0.1):
-    return alpha * new_value + (1 - alpha) * last_filtered
+class LowPassFilter:
+    def __init__(self, cutoff_freq, dt, initial_value=0.0):
+        rc = 1.0 / (2.0 * math.pi * cutoff_freq)
+        self.alpha = dt / (rc + dt)
+        self.y = initial_value
+
+    def update(self, x):
+        self.y += self.alpha * (x - self.y)
+        return self.y
 
 
 # looping through file
+
 
 for line in f:
     count += 1
@@ -97,12 +108,23 @@ for line in f:
     # gyro_z	Angular velocity measured about the z axis
 
     ## Insert your code here ##
-
     [pitch, roll] = acc2euler(acc_x, acc_y, acc_z)
+
+    if count == 2:
+        # init of filter
+        freq = 5
+        dt = ts_now - ts_prev
+        lpFilterP = LowPassFilter(freq, dt, pitch * 180.0 / pi)
+        lpFilterR = LowPassFilter(freq, dt, roll * 180.0 / pi)
 
     # in order to show a plot use this function to append your value to a list:
     plotDataPitch.append(pitch * 180.0 / pi)
     plotDataRoll.append(roll * 180.0 / pi)
+
+    if count >= 2:
+        # filt data
+        plotFiltDataPitch.append(lpFilterP.update(plotDataPitch[-1]))
+        plotFiltDataRoll.append(lpFilterR.update(plotDataRoll[-1]))
 
     ######################################################
 
@@ -113,8 +135,10 @@ f.close()
 if showPlot == True:
     fig, ax = plt.subplots(1, 2)
     ax[0].plot(plotDataPitch)
+    ax[0].plot(plotFiltDataPitch)
     ax[0].set_title("Pitch")
     ax[1].plot(plotDataRoll)
+    ax[1].plot(plotFiltDataRoll)
     ax[1].set_title("Roll")
     plt.savefig("imu_exerciseRoll_plot.png")
     plt.show()
