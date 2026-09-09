@@ -6,6 +6,7 @@ from OpenGL.GL import *
 from OpenGL.GLU import *
 from OpenGL.GLUT import *
 from math import pi
+import sys
 
 class imu_visualize():
 	def __init__(self):

@@ -7,10 +7,10 @@
 ##### Insert initialize code below ###################
 
 ## Uncomment the file to read ##
-fileName = "imu_razor_data_static.txt"
+# fileName = "imu_razor_data_pitch_55deg.txt"
 # fileName = "imu_razor_data_pitch_55deg.txt"
 # fileName = "imu_razor_data_roll_65deg.txt"
-# fileName = 'imu_razor_data_yaw_90deg.txt'
+fileName = "imu_razor_data_yaw_90deg.txt"
 
 ## IMU type
 # imuType = 'vectornav_vn100'
@@ -48,6 +48,20 @@ def acc2euler(ax, ay, az):
     return [pitch, roll]
 
 
+class Gyro2euler:
+    def __init__(self, ts, ang_x=0.0, ang_y=0.0, ang_z=0.0):
+        self.ang_x = ang_x
+        self.ang_y = ang_y
+        self.ang_z = ang_z
+        self.ts = ts
+
+    def update(self, gyro_x, gyro_y, gyro_z):
+        self.ang_x += gyro_x * self.ts
+        self.ang_y += gyro_y * self.ts
+        self.ang_z += gyro_z * self.ts
+        return [self.ang_x, self.ang_y, self.ang_z]
+
+
 class LowPassFilter:
     def __init__(self, cutoff_freq, dt, initial_value=0.0):
         rc = 1.0 / (2.0 * math.pi * cutoff_freq)
@@ -60,7 +74,6 @@ class LowPassFilter:
 
 
 # looping through file
-
 
 for line in f:
     count += 1
@@ -108,23 +121,26 @@ for line in f:
     # gyro_z	Angular velocity measured about the z axis
 
     ## Insert your code here ##
-    [pitch, roll] = acc2euler(acc_x, acc_y, acc_z)
+    # [pitch, roll] = acc2euler(acc_x, acc_y, acc_z)
 
     if count == 2:
         # init of filter
-        freq = 5
+        freq = 1.5
         dt = ts_now - ts_prev
         lpFilterP = LowPassFilter(freq, dt, pitch * 180.0 / pi)
         lpFilterR = LowPassFilter(freq, dt, roll * 180.0 / pi)
-
-    # in order to show a plot use this function to append your value to a list:
-    plotDataPitch.append(pitch * 180.0 / pi)
-    plotDataRoll.append(roll * 180.0 / pi)
+        gyro2euler = Gyro2euler(dt)
 
     if count >= 2:
+        [pitch, roll, yaw] = gyro2euler.update(gyro_x, gyro_y, gyro_z)
+
+        # in order to show a plot use this function to append your value to a list:
+        plotDataPitch.append(pitch * 180.0 / pi)
+        plotDataRoll.append(yaw * 180.0 / pi)
+
         # filt data
-        plotFiltDataPitch.append(lpFilterP.update(plotDataPitch[-1]))
-        plotFiltDataRoll.append(lpFilterR.update(plotDataRoll[-1]))
+        # plotFiltDataPitch.append(lpFilterP.update(plotDataPitch[-1]))
+        # plotFiltDataRoll.append(lpFilterR.update(plotDataRoll[-1]))
 
     ######################################################
 
