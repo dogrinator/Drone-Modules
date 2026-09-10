@@ -51,15 +51,15 @@ bias_gyro_y = 0.0 # [rad/measurement]
 bias_gyro_z = 0.0 # [rad/measurement]
 
 # variances
-gyroVar =
-pitchVar =
+gyroVar = 0
+pitchVar = 0
 
 # Kalman filter start guess
 estAngle = -pi/4.0
-estVar =
+estVar = 0
 
 # Kalman filter housekeeping variables
-gyroVarAcc =
+gyroVarAcc = 0
 
 ######################################################
 
