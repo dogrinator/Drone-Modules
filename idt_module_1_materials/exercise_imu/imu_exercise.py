@@ -7,25 +7,37 @@
 ##### Insert initialize code below ###################
 
 ## Uncomment the file to read ##
-fileName = "imu_razor_data_static.txt"
+# fileName = "imu_razor_data_static.txt"
 # fileName = "imu_razor_data_pitch_55deg.txt"
 # fileName = "imu_razor_data_roll_65deg.txt"
-# fileName = 'imu_razor_data_yaw_90deg.txt'
+fileName = 'imu_razor_data_yaw_90deg.txt'
 
 ## IMU type
 # imuType = 'vectornav_vn100'
 imuType = "sparkfun_razor"
 
 ## Variables for plotting ##
-showPlot = True
+showPlotAcc = False
+showPlotGyro = True
+
 plotDataPitch = []
 plotDataRoll = []
 plotFiltDataPitch = []
 plotFiltDataRoll = []
+dataGyroAngle_x = []
+dataGyroAngle_y = []
+dataGyroAngle_z = []
 
 ## Initialize your variables here ##
 pitch = 0.0
 roll = 0.0
+gyro_angle_x = 0
+gyro_angle_y = 0
+gyro_angle_z = 0
+
+gyro_bias_angle_x = 0
+gyro_bias_angle_y = 0
+gyro_bias_angle_z = 0
 
 ######################################################
 
@@ -49,12 +61,12 @@ def acc2euler(ax, ay, az):
 
 
 class LowPassFilter:
-    def __init__(self, cutoff_freq, dt, initial_value=0.0):
-        rc = 1.0 / (2.0 * math.pi * cutoff_freq)
-        self.alpha = dt / (rc + dt)
+    def __init__(self, cutoff_freq, initial_value=0.0):
+        self.rc = 1.0 / (2.0 * math.pi * cutoff_freq)
         self.y = initial_value
 
-    def update(self, x):
+    def update(self, x, dt):
+        self.alpha = dt / (self.rc + dt)
         self.y += self.alpha * (x - self.y)
         return self.y
 
@@ -110,21 +122,41 @@ for line in f:
     ## Insert your code here ##
     [pitch, roll] = acc2euler(acc_x, acc_y, acc_z)
 
+    dt = ts_now - ts_prev
+
+    if count == 100:
+        gyro_bias_angle_x = gyro_angle_x / count
+        gyro_bias_angle_y = gyro_angle_y / count
+        gyro_bias_angle_z = gyro_angle_z / count
+        gyro_angle_x = 0
+        gyro_angle_y = 0
+        gyro_angle_z = 0
+
+    gyro_angle_x += gyro_x * dt - gyro_bias_angle_x
+    gyro_angle_y += gyro_y * dt - gyro_bias_angle_y
+    gyro_angle_z += gyro_z * dt - gyro_bias_angle_z
+
+
+
     if count == 2:
         # init of filter
-        freq = 5
-        dt = ts_now - ts_prev
-        lpFilterP = LowPassFilter(freq, dt, pitch * 180.0 / pi)
-        lpFilterR = LowPassFilter(freq, dt, roll * 180.0 / pi)
+        freq = 1  # Hz
+        
+        lpFilterP = LowPassFilter(freq, pitch * 180.0 / pi)
+        lpFilterR = LowPassFilter(freq, roll * 180.0 / pi)
 
     # in order to show a plot use this function to append your value to a list:
     plotDataPitch.append(pitch * 180.0 / pi)
     plotDataRoll.append(roll * 180.0 / pi)
 
+    dataGyroAngle_x.append(gyro_angle_x * 180.0 / pi)
+    dataGyroAngle_y.append(gyro_angle_y * 180.0 / pi)
+    dataGyroAngle_z.append(gyro_angle_z * 180.0 / pi)
+
     if count >= 2:
         # filt data
-        plotFiltDataPitch.append(lpFilterP.update(plotDataPitch[-1]))
-        plotFiltDataRoll.append(lpFilterR.update(plotDataRoll[-1]))
+        plotFiltDataPitch.append(lpFilterP.update(plotDataPitch[-1], dt))
+        plotFiltDataRoll.append(lpFilterR.update(plotDataRoll[-1], dt))
 
     ######################################################
 
@@ -132,13 +164,57 @@ for line in f:
 f.close()
 
 # show the plot
-if showPlot == True:
-    fig, ax = plt.subplots(1, 2)
-    ax[0].plot(plotDataPitch)
-    ax[0].plot(plotFiltDataPitch)
-    ax[0].set_title("Pitch")
-    ax[1].plot(plotDataRoll)
-    ax[1].plot(plotFiltDataRoll)
-    ax[1].set_title("Roll")
+# show the plot
+if showPlotAcc == True:
+    fig, ax = plt.subplots(2, 2, figsize=(12, 8))
+    
+    # Pitch
+    ax[0, 0].plot(plotDataPitch)
+    ax[0, 0].set_title("Pitch")
+    ax[0, 0].set_ylabel("pitch [deg]")
+    ax[0, 0].set_xlabel("n samples")
+    
+    ax[0, 1].plot(plotFiltDataPitch)
+    ax[0, 1].set_title("Pitch gefiltert")
+    ax[0, 1].set_ylabel("pitch [deg]")
+    ax[0, 1].set_xlabel("n samples")
+    
+    # Roll
+    ax[1, 0].plot(plotDataRoll)
+    ax[1, 0].set_title("Roll")
+    ax[1, 0].set_ylabel("roll [deg]")
+    ax[1, 0].set_xlabel("n samples")
+    
+    ax[1, 1].plot(plotFiltDataRoll)
+    ax[1, 1].set_title("Roll gefiltert")
+    ax[1, 1].set_ylabel("roll [deg]")
+    ax[1, 1].set_xlabel("n samples")
+    
+    plt.tight_layout()
     plt.savefig("imu_exerciseRoll_plot.png")
+    plt.show()
+
+if showPlotGyro == True:
+    fig, ax = plt.subplots(3, 1, figsize=(12, 8))
+    
+    # Gyro Angle X
+    ax[0].plot(dataGyroAngle_x)
+    ax[0].set_title("Gyro Angle X")
+    ax[0].set_ylabel("angle [deg]")
+    ax[0].set_xlabel("n samples")
+    
+    # Gyro Angle Y
+    ax[1].plot(dataGyroAngle_y)
+    ax[1].set_title("Gyro Angle Y")
+    ax[1].set_ylabel("angle [deg]")
+    ax[1].set_xlabel("n samples")
+    
+    # Gyro Angle Z
+    ax[2].plot(dataGyroAngle_z)
+    ax[2].set_title("Gyro Angle Z")
+    ax[2].set_ylabel("angle [deg]")
+    ax[2].set_xlabel("n samples")
+    
+    plt.tight_layout()
+    plt.savefig("imu_exerciseGyroAngle_plot.png")
     plt.show()
