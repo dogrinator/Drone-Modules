@@ -1,0 +1,107 @@
+GNSS ASSIGNMENT — BULLET POINT FORMAT
+
+================================================================================
+3 GLOBAL NAVIGATION SATELLITE SYSTEMS
+================================================================================
+
+Other GNSS Operational Today
+
+Global Systems:
+- BeiDou (BDS) — China; 35 satellites; independent system; better anti-shielding through high orbits; integrates navigation and communication functions
+- Galileo — European Union; 24+ satellites; civilian-controlled
+- GLONASS — Russia; 24+ satellites; fully operational with global coverage
+
+Regional Systems:
+- NavIC — India; 7 satellites; coverage India and 1,500 km around mainland
+- QZSS — Japan; 7+ satellites; complements GPS in East Asia and Oceania
+
+================================================================================
+3.1 GPS ARCHITECTURE
+================================================================================
+
+Space Segment
+- Satellite constellation transmits one-way radio signals containing satellite position and time information
+- Minimum 24 operating satellites
+- Altitude: 20,000 km
+- At least 4 satellites visible from any point on Earth at any given time
+- Ensures global coverage and positioning capability
+
+Control Segment
+- Global network of monitoring and ground control stations worldwide
+- Maintains proper satellite orbits through command maneuvers
+- Adjusts satellite clocks
+- Performs satellite tracking
+- Monitors satellite health and status information
+- Includes Monitor Stations, Master Control Stations, and Ground Antennas
+
+User Segment
+- GPS receiver equipment used by civilian and military users
+- Collects transmitted satellite position and time information from visible satellites
+- Processes signals to calculate three-dimensional position and time
+- Provides navigation solutions
+
+================================================================================
+3.2 GNSS ERROR SOURCES
+================================================================================
+
+Clock-Related Errors
+- Satellite clock stability: ~2.6–5.2 m error/day (1–2 × 10⁻¹³ stability)
+- Relativistic effects: ~5 m residual error (after onboard compensation for 38.4 μs/day drift)
+- Receiver clock drift: Much larger than satellite clock error; requires estimation as 4th unknown (minimum 4 satellites needed)
+
+Signal Propagation Errors — Sagnac Effect
+- Relativistic error from Earth's rotation during signal propagation
+- Error magnitude: ~30 m if uncompensated
+
+Signal Propagation Errors — Ionosphere Delay
+- Signal penetrates at ~1,000 km altitude through ionized gases
+- Error magnitude: 100 m (300 ns) in severe conditions
+- Dual-frequency receivers eliminate ~99.99% of ionospheric delay
+- Single-frequency receivers correct only ~50% using broadcast models
+- Theoretical models correct up to 80% of ionospheric error
+
+Signal Propagation Errors — Troposphere Delay
+- Signal travels through lowest atmosphere layer (up to 20 km altitude)
+- Error magnitude: 2.5–25 m depending on satellite elevation angle
+- Wet component (10% of delay) difficult to model; dry component easier
+- Cannot be removed through dual-frequency combinations (nondispersive layer)
+
+Signal Propagation Errors — Multipath Errors
+- Signal reaches antenna via multiple paths (direct + reflections from surrounding objects)
+- Delayed echoes superimpose on direct signal
+- Error magnitude: up to 100 m in severe environments
+- Mitigation: choke-ring antennas, elevation-angle weighting, antenna arrays
+
+System Errors
+- Satellite ephemeris error: ~2 m RMS (from curve-fit orbit predictions updated every 2 hours)
+- Receiver noise: ~0.1–1% of carrier phase cycle or centimeters in pseudorange (white noise; cannot be eliminated entirely)
+
+Intentional Errors
+- Signal jamming: Deliberate RF interference preventing GNSS signal tracking; can cause denial of service
+- Signal spoofing: Fake GNSS signals appearing authentic; more harmful than jamming as difficult to detect
+
+================================================================================
+3.3 DILUTION OF PRECISION (DOP)
+================================================================================
+
+DOP Metrics
+- GDOP (Geometric DOP): General term describing overall geometry of visible satellites affecting position and time accuracy
+- PDOP (Position DOP): Geometry factor affecting three-dimensional position accuracy
+- HDOP (Horizontal DOP): Geometry factor affecting horizontal position accuracy only
+- VDOP (Vertical DOP): Geometry factor affecting vertical position accuracy only
+
+Key Points
+- Better satellite geometry → lower DOP → better position solution
+- DOP is unit-less and calculated from receiver and satellite positions only (no measurements needed)
+- Used to select which satellites to include in position calculations
+- Expected accuracy = UERE × DOP (e.g., UERE 9 m × HDOP 1.4 = 12.6 m horizontal accuracy)
+
+================================================================================
+REFERENCES
+================================================================================
+
+- Karaim, M., Elsheikh, M., & Noureldin, A. (2018). GNSS Error Sources. Multifunctional Operation and Application of GPS, 70–81.
+- idt_module_2_research.txt (course research notes)
+
+
+3.5

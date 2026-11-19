@@ -41,10 +41,41 @@ Revision
 # import utmconv class
 from utm import utmconv
 from math import pi, cos
+import math
+
+# functions
+
+def great_circle_distance(lat1, lon1, lat2, lon2):
+    """
+    Calculate great circle distance using haversine formula.
+    Input: lat/lon in degrees
+    Output: distance in nautical miles and meters
+    """
+    # Convert degrees to radians
+    lat1_rad = math.radians(lat1)
+    lon1_rad = math.radians(lon1)
+    lat2_rad = math.radians(lat2)
+    lon2_rad = math.radians(lon2)
+    
+    # Haversine formula (more accurate for short distances)
+    d = 2 * math.asin(math.sqrt(
+        math.sin((lat1_rad - lat2_rad) / 2) ** 2 +
+        math.cos(lat1_rad) * math.cos(lat2_rad) * 
+        math.sin((lon1_rad - lon2_rad) / 2) ** 2
+    ))
+    
+    # Convert radians to nautical miles
+    # distance_nm = distance_radians * (180 * 60 / pi)
+    distance_nm = d * (180 * 60 / math.pi)
+    
+    # Convert to meters
+    distance_m = distance_nm * 1852
+    
+    return distance_nm, distance_m
 
 # geodetic reference coordinate
-lat1 =  55.0
-lon1 = 009.0
+lat1 =  55.47
+lon1 = 010.33
 
 print ('First position [deg]:')
 print ('  latitude:  %.8f'  % (lat1))
@@ -59,13 +90,18 @@ print ('\nConverted from geodetic to UTM [m]')
 print ('  %d %c %.5fe %.5fn' % (zone, letter, e1, n1))
 
 # now generating the second UTM coordinate
-e2 = e1 + 100.0 
-n2 = n1 
+e2 = e1 #+ 1000.0 
+n2 = n1 + 1000
 
 # convert back from UTM to geodetic
 (lat2, lon2) = uc.utm_to_geodetic (hemisphere, zone, e2, n2)
-print ('\nSecond position 100 meter East [deg]:')
+print ('\nSecond position 1000 meter East [deg]:')
 print ('  latitude:  %.8f'  % (lat2))
 print ('  longitude: %.8f'  % (lon2))
 
 
+nm, meters = great_circle_distance(lat1, lon1, lat2, lon2)
+print(f"Reference: N{lat1}° E{lon1}°")
+print(f"Target: N{lat2}° E{lon2:.6f}°")
+print(f"Great Circle Distance: {nm:.6f} nm = {meters:.2f} meters")
+print(f"Projection Error: {meters - 1000:.6f} meters")

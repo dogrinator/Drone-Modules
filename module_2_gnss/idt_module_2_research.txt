@@ -1,0 +1,261 @@
+3 Global Navigation Satellite Systems
+The Global Positioning System (GPS) http://www.gps.gov is the best known implementation of
+a Global Navigation Satellite System (GNSS).
+
+Please name the other GNSS operational today.
+
+
+Please briefly describe relevant differences.
+- BeiDou Navigation Satellite System (BDS); China; 35 Satellites; indipendent system
+    - BDS operates more satellites in high orbits to offer better anti-shielding capabilities
+    - BDS integrates navigation and communication function
+    - Quellen:
+        - http://en.beidou.gov.cn/SYSTEMS/System/
+        - https://www.gps.gov/other-global-navigation-satellite-systems-gnss
+- Galileo; European Union; 24 + Satellites; under civilian control
+- GLONASS; Russia; 24+ Satellites
+
+RNSS (regional navigation satellite systems) -> servoce specific regions only 
+- NavIC; India; Autonomous system that covers India and 1500 km around the mainland of India; 7 Satellites
+- QZSS; Japan; Improves GPS in East Asia and Oceania -> complementary; 7+ Satellites
+
+3.1 GPS architecture
+Please describe using three paragraphs the GPS Space segment, Control segment and User segment
+
+Space Segement
+- satellite constellation that transmits oneway radio signals to users (current Satellite position and time)
+- at least 24 operating Satellites for GPS
+- altitude of 20000 km 
+- constellations that from every point at least 4 satallites are available
+
+Control Segement
+- monitor and control stations worldwide (global network)
+
+- maintanance of the satellites: proper orbits through command manouvers
+- adjust satellite clocks
+- satellite tracking; navigational data; maintains helath and status info
+- Monitor Stations, Master Control Stations, Ground Antennas
+
+
+User segement
+- GPS receiver equipment
+- uses the transmitted information / signal to calculate three dimensional position and time
+
+
+3.2 GNSS error sources
+Please describe using short paragraphs the most dominant error sources of a GNSS.
+What are the expected contributions to the final inaccuracy in meter?
+Please include proper references.
+Quelle: Paper
+Brainstorming
+- Clock drift
+- signal blockage
+- Signal Refelction z.B. from Building big structures
+- Atmosphere, hard to model and changes with time 
+- receiver design, features, accuracy
+
+unintentional Errors that result from the nature of the Signal:
+Atmosphere
+- medium imposes extra delays to Signal Propagation time that lead to Errors
+
+Reflection and Echos
+- Signal bounces off objects around the Receiver
+- Signal possibly reaches Receiver more than one time
+- called "multipath"
+- Major error source
+
+Clock-related Errors
+- satellite high precision Clock with slow drift; Receiver with cheap Clock and fast drift
+- solution: differencig between satellites; Receiver Clock time is a unkown -> 4th unkown -> 4 satellites needed
+
+Signal Propagation Errors
+- earth Rotation between sending and recieving the Signal; rrelative shift of satellite reciever locatiosn -> sagnac effect
+- ionosphere and troposphere effects
+- multipath effect
+
+sagnac effect
+- relativistic error because of Rotation of earth between sending and recieving the Signal
+- 30 m Position error if not compensated
+
+ionosphere
+- upper layer of atmosphere
+- 1000 km Above earth
+- dispersive medium - delay is frequency dependent
+- significnat error of gnss
+- 100 m error
+- correction with use of dual frequency Receivers or specific ionosphere models
+- 99.9 % korrektur und bis zu 80 %
+
+Troposphere Errors
+- lowest part of atmosphere
+- 20 km Above sealevel
+- wet and dry
+- wet 10 % of delay
+- frequency Independent
+- cannot be removed by combining l1 and l2
+- 2.5 to 25 m error dependent on satellite Elevation
+
+Multipath errors
+- Signal reachers antenno over multiple paths
+- Signal refelction through surrounding objects
+- direct line of sight + echoes
+- delayed echoes are superimposed
+- depends on surrounding Environment
+- up to 100 m in bad Environments
+
+System erros
+- satellite Orbit: satellite updates datas every 2 h -> curve fit of path -> error; 2m
+- reciever noise: 
+
+
+
+intentional Errors: jamming and spoofing
+- jamming: extra Signal in same frequncy and higher power
+- spoofing: Signal that makes reciever think ist real gps Signal to trick the systemm
+
+
+
+jamming
+- deliberate interference caused by the broadcasting of radio frequency (RF) signals near the receiver with the aim of preventing the tracking of GNSS Signals
+
+Dilution of Precision (DOP)
+What are GDOP, PDOP, HDOP and VDOP?
+
+- DOP: actor depends on the geometry of visible satellites; the beter the geometry is, the lower the DOP, and, hence, the beter the position solution
+-  DOP is used to select which satellites should be included in position
+calculations. An ideal receiver would select only the set of satellites with the minimum DOP
+- GDOP: DOP or the geometric DOP (GDOP) is the general term to describe the geometry of satellites
+-  Horizontal dilution of precision (HDOP)
+- vertical dilution of precision (VDOP)
+- position dilution of precision (PDOP) 
+
+3.4 REAL TIME KINEMATICS (RTK) AND INTEGER AMBIGUITY
+ 
+================================================================================
+REAL TIME KINEMATICS (RTK) — PRINCIPLES
+================================================================================
+ 
+- Differential GNSS technique based on carrier phase measurements (not pseudo-code)
+- Reference (base) station with well-known location transmits corrections to rover in real-time
+- Main GNSS errors cancel out through differential processing: satellite clock bias, orbital error, ionospheric delay, tropospheric delay
+- Rover determines position relative to base station, then adds base station position to calculate absolute position in global coordinate frame
+- Service range: 10–20 kilometres
+- Real-time communication channel required between base and rover
+- Accuracy achieved: a few centimetres
+- Commonly used in surveying applications
+ 
+================================================================================
+INTEGER AMBIGUITY
+================================================================================
+ 
+- Carrier phase ambiguity: an unknown integer number of times the carrier wavelength
+- Needs to be fixed (resolved) to rebuild full range measurements from carrier phase measurements
+- Carrier phase measurements have much smaller noise (~5 mm) compared to pseudo-code measurements (~1 m)
+- Must be resolved to integer values to achieve centimetre-level accuracy (float solution only gives decimetre-level accuracy)
+- Double differencing between two receivers eliminates non-integer terms, allowing ambiguities to be expressed as integers
+ 
+================================================================================
+REFERENCES
+================================================================================
+ 
+- ESA Navipedia: Real Time Kinematics
+  https://gssc.esa.int/navipedia/index.php/Real_Time_Kinematics
+ 
+- ESA Navipedia: RTK Fundamentals
+  https://gssc.esa.int/navipedia/index.php?title=RTK_Fundamentals
+
+3.5
+GNSS ACCURACY — POSITIONING TYPES AND EXPECTED ACCURACY
+
+================================================================================
+1. STANDARD POSITIONING SERVICE (SPS)
+================================================================================
+
+- Free civilian GPS service based on broadcast signal only
+- No reference station or corrections used
+- Expected accuracy: ~1-10 meters typical
+- Government commitment: daily global average URE ≤2.0 m with 95% probability (actual performance typically better)
+- Commonly used for consumer-grade positioning and navigation
+- User Equivalent Range Error (URE): ≤0.643 m achieved on average (as of 2021)
+
+Reference: GPS.gov — GPS Accuracy; 2020 SPS Performance Standard
+
+================================================================================
+2. DIFFERENTIAL GPS (DGPS)
+================================================================================
+
+- Uses reference station with known location to broadcast corrections to rover
+- Code-based differential positioning: uses ONLY pseudo-code (pseudorange) measurements
+- Pseudo-code measures signal travel time/distance (not carrier phase wavelengths)
+- NO integer ambiguity problem (code measurements are unambiguous)
+- Expected accuracy: 1-3 meters (sub-meter level)
+- Improvement over standard GPS: ~10-fold improvement
+- Code-based differential GPS achieves ~1 m accuracy compared to ~10 m for standard SPS
+- Commonly used for maritime navigation and surveying
+- Corrections broadcast to users within local service area
+- Practical range: works over larger distances (100+ km), accuracy degrades ~1 cm/km
+
+Reference: ESA Navipedia — Differential GPS; ESA Navipedia — RTK Fundamentals
+
+================================================================================
+3. RTK FLOAT
+================================================================================
+
+- Uses carrier phase measurements (wavelength cycles) — NOT pseudo-code
+- Intermediate state: carrier phase ambiguities estimated as floating-point numbers (NOT resolved to integers)
+- Has integer ambiguity problem: must determine exact number of complete wavelengths (unknown initially)
+- Receiver has applied differential corrections but insufficient information for integer ambiguity resolution
+- Expected accuracy: 1-3 meters (sub-meter, but NOT centimeter-level)
+- Transitional phase; may converge to fixed solution with better satellite geometry or signal conditions
+- Useful for general navigation but NOT suitable for applications requiring centimeter-level precision
+
+Reference: ESA Navipedia — RTK Fundamentals; Point One Nav — RTK Corrections
+
+================================================================================
+4. RTK FIXED
+================================================================================
+
+- Uses carrier phase measurements (wavelength cycles) — much more precise than pseudo-code
+- Final state: all carrier phase ambiguities successfully resolved to integer values
+- Ambiguity problem SOLVED: exact number of complete wavelengths determined
+- Full centimeter-level accuracy achieved
+- Expected accuracy: 1-2 cm horizontal, 2-3 cm vertical
+- Achieves few centimeters accuracy (compared to 1 m for code-based differential GPS)
+- Service range: 10-20 km from reference station (limited by ionospheric de-correlation)
+- Target state for professional surveying and precision applications
+- Convergence from float to fixed: typically seconds to minutes
+
+Reference: ESA Navipedia — RTK Fundamentals; ESA Navipedia — Real Time Kinematics
+
+================================================================================
+ACCURACY COMPARISON TABLE
+================================================================================
+
+Positioning Type      | Measurement Type      | Accuracy Level        | Comments
+SPS                   | Pseudo-code only      | 1-10 meters           | Civilian GPS, no corrections
+DGPS                  | Pseudo-code only      | 1-3 meters            | Code-based, reference station, NO ambiguity
+RTK Float             | Carrier phase         | 1-3 meters            | Intermediate, ambiguities NOT resolved (floating)
+RTK Fixed             | Carrier phase         | 1-2 cm (horiz)        | High precision, ambiguities RESOLVED
+                      |                       | 2-3 cm (vert)         | Professional surveying standard
+
+================================================================================
+REFERENCES
+================================================================================
+
+- GPS.gov (U.S. Government) — GPS Accuracy
+  https://www.gps.gov/gps-accuracy
+
+- GPS.gov (U.S. Government) — 2020 SPS Performance Standard
+  https://www.gps.gov/sites/default/files/2025-07/2020-SPS-performance-standard.pdf
+
+- ESA Navipedia — Differential GPS
+  https://gssc.esa.int/navipedia/index.php/Differential_GPS
+
+- ESA Navipedia — Real Time Kinematics
+  https://gssc.esa.int/navipedia/index.php/Real_Time_Kinematics
+
+- ESA Navipedia — RTK Fundamentals
+  https://gssc.esa.int/navipedia/index.php?title=RTK_Fundamentals
+
+- Point One Nav — RTK Corrections: What They Are and How They Work
+  https://pointonenav.com/insights/rtk-corrections/
